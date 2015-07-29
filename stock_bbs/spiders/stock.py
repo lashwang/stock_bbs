@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
-
+from scrapy.selector import Selector
+from stock_bbs.parser.HtmlParser import *
 
 class StockSpider(scrapy.Spider):
     name = "stock"
@@ -10,4 +11,20 @@ class StockSpider(scrapy.Spider):
     )
 
     def parse(self, response):
-        pass
+        hxs = response.xpath(u'//div[@class="mt5"]')
+        print hxs
+        hxs = hxs.xpath(u'.//tr')
+        print response.url
+        for each in hxs:
+            HtmlParser.parse_bbs_ticket(each,response)
+
+
+
+
+
+
+
+
+
+
+

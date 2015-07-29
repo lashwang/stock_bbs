@@ -8,7 +8,11 @@
 import scrapy
 
 
-class StockBbsItem(scrapy.Item):
+class StockBBSProfieItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
+    url = scrapy.Field()
+    author = scrapy.Field()
+    clickNumber = scrapy.Field()
+    responseNUmber = scrapy.Field()
     pass
