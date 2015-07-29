@@ -16,7 +16,7 @@ class StockSpider(scrapy.Spider):
         hxs = hxs.xpath(u'.//tr')
         print response.url
         for each in hxs:
-            HtmlParser.parse_bbs_ticket(each,response)
+            yield HtmlParser.parse_bbs_ticket(each,response)
 
 
 
