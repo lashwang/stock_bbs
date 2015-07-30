@@ -1,28 +1,50 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from scrapy.contrib.spiders import CrawlSpider,Rule
+from scrapy.spiders import CrawlSpider,Rule
 from stock_bbs.parser.HtmlParser import *
+from scrapy.linkextractors import LinkExtractor
+from scrapy.http import Request
+from stock_bbs.utils.utils import *
+from scrapy.exceptions import CloseSpider
 
 class StockSpider(CrawlSpider):
     name = "stock"
+    PAGE = 0
+
+
     allowed_domains = ["bbs.tianya.cn"]
     start_urls = (
         'http://bbs.tianya.cn/list-stocks-1.shtml',
     )
 
-    def parse(self, response):
+    rules = (
+        Rule (LinkExtractor(allow=("nextid", ),
+        restrict_xpaths=('//div[@class="links"]/a[@rel="nofollow"]',)),
+        callback="parse_page", follow= True),
+    )
+
+
+
+
+    def __init__(self, *a, **kw):
+        depth = 0
+        super(StockSpider, self).__init__(*a, **kw)
+
+    def parse_start_url(self, response):
+        #print 'parse_start_url:',response.url
         return self.parse_page(response)
 
 
     def parse_page(self,response):
+        if self.PAGE > 20:
+            raise CloseSpider('page number limit exceeded:',self.PAGE)
+        self.PAGE += 1
+        print 'call parse_page,url:',response.url
+
         hxs = response.xpath(u'//div[@class="mt5"]')
-        print hxs
         hxs = hxs.xpath(u'.//tr')
-        print response.url
         for each in hxs:
             yield HtmlParser.parse_bbs_ticket(each,response)
-
-        print 'end'
 
 
 
