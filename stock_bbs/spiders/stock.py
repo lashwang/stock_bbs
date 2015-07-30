@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from scrapy.selector import Selector
+from scrapy.contrib.spiders import CrawlSpider,Rule
 from stock_bbs.parser.HtmlParser import *
 
-class StockSpider(scrapy.Spider):
+class StockSpider(CrawlSpider):
     name = "stock"
     allowed_domains = ["bbs.tianya.cn"]
     start_urls = (
@@ -11,12 +11,18 @@ class StockSpider(scrapy.Spider):
     )
 
     def parse(self, response):
+        return self.parse_page(response)
+
+
+    def parse_page(self,response):
         hxs = response.xpath(u'//div[@class="mt5"]')
         print hxs
         hxs = hxs.xpath(u'.//tr')
         print response.url
         for each in hxs:
             yield HtmlParser.parse_bbs_ticket(each,response)
+
+        print 'end'
 
 
 
