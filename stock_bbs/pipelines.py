@@ -8,4 +8,5 @@
 
 class StockBbsPipeline(object):
     def process_item(self, item, spider):
+        print 'process_item'
         return item

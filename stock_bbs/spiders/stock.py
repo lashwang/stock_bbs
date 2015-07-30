@@ -10,7 +10,7 @@ from scrapy.exceptions import CloseSpider
 class StockSpider(CrawlSpider):
     name = "stock"
     PAGE = 0
-
+    MAX_PAGE = 1
 
     allowed_domains = ["bbs.tianya.cn"]
     start_urls = (
@@ -19,12 +19,16 @@ class StockSpider(CrawlSpider):
 
     rules = (
         Rule (LinkExtractor(allow=("nextid", ),
-        restrict_xpaths=('//div[@class="links"]/a[@rel="nofollow"]',)),
-        callback="parse_page", follow= True),
+            restrict_xpaths=('//div[@class="links"]/a[@rel="nofollow"]',)),
+            callback="parse_index_page", follow=True),
+        Rule (LinkExtractor(allow=("post",),
+            restrict_xpaths=('//div[@class="mt5"]//td/a',)),
+            callback="parse_detail_page",follow=True),
+
+        Rule (LinkExtractor(allow=("post",),
+            restrict_xpaths=('//div[@id="bd"]/div[@class="clearfix"]/div/form/a[contains(@class,"next")]',)),
+            callback="parse_detail_page",follow=True),
     )
-
-
-
 
     def __init__(self, *a, **kw):
         depth = 0
@@ -32,22 +36,26 @@ class StockSpider(CrawlSpider):
 
     def parse_start_url(self, response):
         #print 'parse_start_url:',response.url
-        return self.parse_page(response)
+        return self.parse_index_page(response)
 
 
-    def parse_page(self,response):
-        if self.PAGE > 20:
+    def parse_index_page(self,response):
+        if self.PAGE > self.MAX_PAGE:
+            print 'page number limit exceeded:'
             raise CloseSpider('page number limit exceeded:',self.PAGE)
         self.PAGE += 1
-        print 'call parse_page,url:',response.url
+        print 'parse_index_page,url:',response.url
 
+        '''
         hxs = response.xpath(u'//div[@class="mt5"]')
         hxs = hxs.xpath(u'.//tr')
         for each in hxs:
             yield HtmlParser.parse_bbs_ticket(each,response)
+        '''
 
-
-
+    def parse_detail_page(self,respone):
+        print 'parse_detail_page,url:',respone.url
+        pass
 
 
 
