@@ -10,13 +10,16 @@ from scrapy.conf import settings
 from scrapy.exceptions import DropItem
 from scrapy import log
 from database.mongodb import MongoDB
-
+from scrapy.conf import settings
 
 class MongoDBPipeline(object):
 
     def process_item(self, item, spider):
-        print 'process_item'
-        print item
+        print 'process_item,click number:',item['clickNumber']
+        clickNumber = int(item['clickNumber'])
+        if clickNumber < int(settings['CLICKNUMBER_THRESHOLD'])*10000:
+            return item
+
         valid = True
         for data in item:
             if not data:

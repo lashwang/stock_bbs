@@ -6,10 +6,12 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.http import Request
 from stock_bbs.utils.utils import *
 from scrapy.exceptions import CloseSpider
+from scrapy.conf import settings
+
 
 class StockSpider(CrawlSpider):
     name = "stock_list"
-    MAX_PAGE = 10
+    MAX_PAGE = int(settings['MAX_PAGE'])
 
     allowed_domains = ["bbs.tianya.cn"]
     start_urls = (
