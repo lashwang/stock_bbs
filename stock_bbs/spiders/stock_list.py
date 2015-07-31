@@ -9,9 +9,7 @@ from scrapy.exceptions import CloseSpider
 
 class StockSpider(CrawlSpider):
     name = "stock_list"
-    PAGE = 0
-    MAX_PAGE = 1
-    depth = 0
+    MAX_PAGE = 10
 
     allowed_domains = ["bbs.tianya.cn"]
     start_urls = (
@@ -28,6 +26,10 @@ class StockSpider(CrawlSpider):
         callback="parse_detail_page",follow=True),
     '''
 
+    def __init__(self, *a, **kw):
+        self.PAGE = 0
+        super(StockSpider, self).__init__(*a, **kw)
+
     rules = (
         Rule (LinkExtractor(allow=("nextid", ),
             restrict_xpaths=('//div[@class="links"]/a[@rel="nofollow"]',)),
@@ -39,8 +41,8 @@ class StockSpider(CrawlSpider):
 
 
     def parse_index_page(self,response):
-        if self.PAGE > self.MAX_PAGE:
-            print 'page number limit exceeded:'
+        if self.PAGE > StockSpider.MAX_PAGE:
+            print 'page number limit exceeded:' + str(StockSpider.MAX_PAGE)
             raise CloseSpider('page number limit exceeded:')
         self.PAGE += 1
         print 'parse_index_page,url:',response.url

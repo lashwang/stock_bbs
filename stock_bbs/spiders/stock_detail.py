@@ -21,6 +21,9 @@ class StockDetailSpider(CrawlSpider):
 
 
     def __init__(self, *a, **kw):
+        self.start_urls = []
+
+
         super(StockDetailSpider, self).__init__(*a, **kw)
 
     def parse_start_url(self, response):
