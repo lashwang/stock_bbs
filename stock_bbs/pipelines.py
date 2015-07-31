@@ -15,7 +15,7 @@ class MongoDBPipeline(object):
     def __init__(self):
         client = MongoClient(settings['MONGODB_SERVER'],settings['MONGODB_PORT'])
         self.db = client[settings['MONGODB_DB']]
-        self.collection = self.db[settings['MONGODB_COLLECTION']]
+        self.collection = self.db[settings['MONGODB_COLLECTION_LIST']]
 
     def process_item(self, item, spider):
         print 'process_item'
