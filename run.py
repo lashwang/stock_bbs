@@ -5,5 +5,5 @@ __author__ = 'Simon'
 from scrapy import cmdline
 
 if __name__ == '__main__':
-    cmdline.execute("scrapy crawl stock_list".split())
-    #cmdline.execute("scrapy crawl stock_detail".split())
+    #cmdline.execute("scrapy crawl stock_list".split())
+    cmdline.execute("scrapy crawl stock_detail".split())

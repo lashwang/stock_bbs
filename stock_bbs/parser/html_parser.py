@@ -3,6 +3,8 @@ __author__ = 'Simon'
 
 from stock_bbs.items import StockBBSProfieItem
 import urlparse
+from scrapy.exceptions import CloseSpider
+
 
 class HtmlParser():
     def __init__(self):
@@ -20,12 +22,23 @@ class HtmlParser():
             url = urlparse.urljoin(response.url,url[0])
             bbsProfile['url'] = url
             #print "url:" + url
-
+        '''
         title = (hxs[0]).xpath(u'.//a/text()').extract()
-        if title :
+        if title and len(title[0].strip()) == 0:
+            title = (hxs[0]).xpath(u'.//a//span[1]//text()').extract()
+        if title and len(title[0].strip()) == 0:
+            title = (hxs[0]).xpath(u'.//a/text()[last()]').extract()
+        if title and len(title[0].strip()) > 0:
             title = title[0].strip()
             bbsProfile['title'] = title
-            #print "title:" + title
+        else:
+            from scrapy.utils.response import open_in_browser
+            print "empty title:",url
+            print title
+            open_in_browser(response)
+            raise CloseSpider('page number limit exceeded:')
+        '''
+
 
         author = (hxs[1]).xpath(u'.//a/text()').extract()
         if author and len(author) == 1:
@@ -47,3 +60,17 @@ class HtmlParser():
 
 
         return bbsProfile
+
+    @staticmethod
+    def parse_detail_page_main(response):
+        title = response.xpath(u'//*[@class="s_title"]//span//text()').extract()
+
+        if title and len(title) == 1:
+            title = title[0]
+            print title
+
+        origin_date = response.xpath(u'//*[@id="post_head"]//*[@class="atl-info"]//span[2]//text()').extract()
+
+        if origin_date and len(origin_date) == 1:
+            origin_date = origin_date[0]
+            print origin_date

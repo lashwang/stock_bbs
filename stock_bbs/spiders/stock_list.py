@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
 from scrapy.spiders import CrawlSpider,Rule
-from stock_bbs.parser.HtmlParser import *
+from stock_bbs.parser.html_parser import *
 from scrapy.linkextractors import LinkExtractor
 from scrapy.http import Request
 from stock_bbs.utils.utils import *
