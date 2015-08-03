@@ -64,13 +64,58 @@ class HtmlParser():
     @staticmethod
     def parse_detail_page_main(response):
         title = response.xpath(u'//*[@class="s_title"]//span//text()').extract()
+        result = {}
+
 
         if title and len(title) == 1:
             title = title[0]
-            print title
+            #print title
+            result['title']= title
 
         origin_date = response.xpath(u'//*[@id="post_head"]//*[@class="atl-info"]//span[2]//text()').extract()
 
         if origin_date and len(origin_date) == 1:
             origin_date = origin_date[0]
-            print origin_date
+            #print origin_date
+            result['origin_date']= origin_date
+
+        uname = response.xpath(u'//*[@id="post_head"]//*[@class="atl-info"]//*[@uname]//text()').extract()
+        if uname and len(uname) == 1:
+            uname = uname[0]
+            #print uname
+            result['uname']= uname
+
+        page_links = response.xpath(u'//*[@id="post_head"]//*[@class="atl-pages"]//a/@href').extract()
+        if page_links and len(page_links) > 2:
+            next_page_link = page_links[-1]
+            last_page_link = page_links[-2]
+            #print last_page_link
+            result['last_page_link']= urlparse.urljoin(response.url,last_page_link)
+            #print next_page_link
+            result['next_page_link']= urlparse.urljoin(response.url,next_page_link)
+
+        # get author's comment
+        # get author's first comment
+        first_comment = response.xpath(u'//*[@class="atl-item host-item"]//*[contains(@class,"bbs-content")]').extract()
+        if first_comment and len(first_comment) == 1:
+            first_comment = first_comment[0]
+            #print first_comment
+            result['first_comment']= first_comment
+
+
+
+        return result
+
+    @staticmethod
+    def parse_detail_page_sub(response,uname):
+        results = {}
+
+        # get prev page
+        last_page_link = response.xpath(u'//*[@id="post_head"]//*[@class="atl-pages"]//a/@href').extract()
+        if last_page_link and len(last_page_link) >= 2:
+            last_page_link = last_page_link[0]
+            results['last_page_link'] = urlparse.urljoin(response.url,last_page_link)
+
+        
+
+        return results
