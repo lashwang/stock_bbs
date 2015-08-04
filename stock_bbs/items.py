@@ -21,3 +21,4 @@ class StockBBSProfieItem(scrapy.Item):
 
 class StockBBSDetailItem(scrapy.Item):
     title = scrapy.Field()
+    url = scrapy.Field()

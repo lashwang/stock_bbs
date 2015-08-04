@@ -7,7 +7,7 @@ from scrapy.http import Request
 from stock_bbs.utils.utils import *
 from scrapy.exceptions import CloseSpider
 from stock_bbs.database.mongodb import MongoDB
-
+from scrapy.conf import settings
 
 
 __author__ = 'Simon'
@@ -38,12 +38,28 @@ class StockDetailSpider(CrawlSpider):
         if result['last_page_link']:
             request = Request(result['last_page_link'],callback=self.parse_sub_url)
             request.meta['uname'] = result['uname']
+            request.meta['count'] = 1
             return request
 
 
 
     def parse_sub_url(self,response):
-        print 'parse_sub_url:',response.url,response.meta['uname']
+        uname = response.meta['uname']
+        count = response.meta['count']
+        max_page_count = int(settings['MAX_DETAIL_PAGE'])
+        print 'parse_sub_url:',response.url,uname
         results = HtmlParser.parse_detail_page_sub(response,response.meta['uname'])
         print results
+
+        if count >= max_page_count:
+            print 'get max detailed page:',count
+            return
+
+        if results['prev_page_link']:
+            request = Request(results['prev_page_link'],callback=self.parse_sub_url)
+            request.meta['uname'] = uname
+            request.meta['count'] = count + 1
+            return request
+
+
 

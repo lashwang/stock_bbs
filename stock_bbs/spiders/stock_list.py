@@ -11,7 +11,7 @@ from scrapy.conf import settings
 
 class StockSpider(CrawlSpider):
     name = "stock_list"
-    MAX_PAGE = int(settings['MAX_PAGE'])
+    MAX_INDEX_PAGE = int(settings['MAX_INDEX_PAGE'])
 
     allowed_domains = ["bbs.tianya.cn"]
     start_urls = (
@@ -43,8 +43,8 @@ class StockSpider(CrawlSpider):
 
 
     def parse_index_page(self,response):
-        if self.PAGE > StockSpider.MAX_PAGE:
-            print 'page number limit exceeded:' + str(StockSpider.MAX_PAGE)
+        if self.PAGE > StockSpider.MAX_INDEX_PAGE:
+            print 'page number limit exceeded:' + str(StockSpider.MAX_INDEX_PAGE)
             raise CloseSpider('page number limit exceeded:')
         self.PAGE += 1
         print 'parse_index_page,url:',response.url

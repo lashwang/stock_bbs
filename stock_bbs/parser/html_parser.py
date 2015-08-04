@@ -6,7 +6,7 @@ import urlparse
 from scrapy.exceptions import CloseSpider
 
 
-class HtmlParser():
+class HtmlParser(object):
     def __init__(self):
         pass
 
@@ -108,14 +108,52 @@ class HtmlParser():
 
     @staticmethod
     def parse_detail_page_sub(response,uname):
-        results = {}
+        print 'call parse_detail_page_sub'
+        page_details = {}
 
         # get prev page
-        last_page_link = response.xpath(u'//*[@id="post_head"]//*[@class="atl-pages"]//a/@href').extract()
-        if last_page_link and len(last_page_link) >= 2:
-            last_page_link = last_page_link[0]
-            results['last_page_link'] = urlparse.urljoin(response.url,last_page_link)
+        prev_page_link = response.xpath(u'//*[@id="post_head"]//*[@class="atl-pages"]//a/@href').extract()
+        if prev_page_link and len(prev_page_link) >= 2:
+            last_page_link = prev_page_link[0]
+            page_details['prev_page_link'] = urlparse.urljoin(response.url,last_page_link)
 
-        
 
-        return results
+        # get user's comments
+        comments_list_selector = response.xpath(u'//*[@class="atl-item"]')
+        bbs_list = HtmlParser.parse_comment_by_uname(comments_list_selector,uname)
+        page_details['bbs_list'] = bbs_list
+
+        return page_details
+
+
+    @staticmethod
+    def parse_comment_by_uname(selector,uname):
+        bbs_list = []
+
+        for each in selector:
+            _uname = each.xpath(u'.//*[@class="atl-info"]//*[@uname]//text()').extract()
+            if _uname and len(_uname) == 1:
+                _uname = _uname[0]
+                #print _uname
+                if _uname.encode('utf8') == uname.encode('utf8'):
+                    publish_time = each.xpath(u'.//*[@class="atl-info"]//span[2]//text()').extract()
+                    print "fine same user"
+                    if publish_time and len(publish_time) == 1:
+                        publish_time = publish_time[0]
+                        #print publish_time
+                    else:
+                        print 'unexpected xpath in publish time'
+
+                    bbs_content = each.xpath(u'.//*[@class="atl-content"]//*[contains(@class,"bbs-content")]').extract()
+
+                    if bbs_content and len(bbs_content) == 1:
+                        bbs_content = bbs_content[0]
+                        #print bbs_content
+                    else:
+                        print 'unexpected xpath in bbs context'
+
+                    bbs_list.append({'publish_time':publish_time,'bbs_content':bbs_content})
+            else:
+                print 'unexpected xpath in uname'
+
+        return bbs_list
