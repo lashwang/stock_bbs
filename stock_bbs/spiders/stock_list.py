@@ -76,9 +76,6 @@ class StockSpider(CrawlSpider):
         if result['create_date']:
             item['create_date'] = result['create_date']
 
-        if result['first_comment']:
-            item['first_comment'] = result['first_comment']
-
         return item
 
 

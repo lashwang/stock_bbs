@@ -4,6 +4,8 @@ __author__ = 'Simon'
 from stock_bbs.items import StockBBSProfieItem
 import urlparse
 from scrapy.exceptions import CloseSpider
+import re
+import datetime
 
 
 class HtmlParser(object):
@@ -21,24 +23,6 @@ class HtmlParser(object):
         if url and len(url) == 1:
             url = urlparse.urljoin(response.url,url[0])
             bbsProfile['url'] = url
-            #print "url:" + url
-        '''
-        title = (hxs[0]).xpath(u'.//a/text()').extract()
-        if title and len(title[0].strip()) == 0:
-            title = (hxs[0]).xpath(u'.//a//span[1]//text()').extract()
-        if title and len(title[0].strip()) == 0:
-            title = (hxs[0]).xpath(u'.//a/text()[last()]').extract()
-        if title and len(title[0].strip()) > 0:
-            title = title[0].strip()
-            bbsProfile['title'] = title
-        else:
-            from scrapy.utils.response import open_in_browser
-            print "empty title:",url
-            print title
-            open_in_browser(response)
-            raise CloseSpider('page number limit exceeded:')
-        '''
-
 
         author = (hxs[1]).xpath(u'.//a/text()').extract()
         if author and len(author) == 1:
@@ -49,13 +33,13 @@ class HtmlParser(object):
         clictNumber = (hxs[2]).xpath(u'.//text()').extract()
         if clictNumber and len(clictNumber):
             clictNumber = clictNumber[0]
-            bbsProfile['clickNumber'] = clictNumber
+            bbsProfile['clickNumber'] = int(clictNumber)
             #print "clictNumber:" + clictNumber
 
         responseNUmber = (hxs[3]).xpath(u'.//text()').extract()
         if responseNUmber and len(responseNUmber):
             responseNUmber = responseNUmber[0]
-            bbsProfile['responseNUmber'] = responseNUmber
+            bbsProfile['responseNUmber'] = int(responseNUmber)
             #print "responseNUmber:" +responseNUmber
 
 
@@ -77,7 +61,8 @@ class HtmlParser(object):
         if create_date and len(create_date) == 1:
             create_date = create_date[0]
             #print create_date
-            result['create_date']= create_date
+            #result['create_date']= create_date
+            result['create_date'] = HtmlParser.parse_create_date(create_date)
 
         uname = response.xpath(u'//*[@id="post_head"]//*[@class="atl-info"]//*[@uname]//text()').extract()
         if uname and len(uname) == 1:
@@ -157,3 +142,23 @@ class HtmlParser(object):
                 print 'unexpected xpath in uname'
 
         return bbs_list
+
+
+    @staticmethod
+    def parse_create_date(date_str):
+        time_items = re.findall(ur'(\d+)',date_str)
+
+        if len(time_items) != 6:
+            return None
+
+        year = int(time_items[0])
+        month = int(time_items[1])
+        day = int(time_items[2])
+        hour = int(time_items[3])
+        min = int(time_items[4])
+        sec = int(time_items[5])
+
+        return datetime.datetime(year,month,day,hour,min,sec)
+
+
+

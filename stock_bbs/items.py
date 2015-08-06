@@ -17,10 +17,9 @@ class StockBBSProfieItem(scrapy.Item):
     clickNumber = scrapy.Field()
     responseNUmber = scrapy.Field()
     create_date = scrapy.Field()
-    first_comment = scrapy.Field()
     pass
 
 
 class StockBBSDetailItem(scrapy.Item):
-    title = scrapy.Field()
     url = scrapy.Field()
+
