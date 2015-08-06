@@ -24,7 +24,7 @@ class StockDetailSpider(CrawlSpider):
 
     def __init__(self, *a, **kw):
         self.start_urls = []
-        for d in MongoDB.collection_list.find()[:1]:
+        for d in MongoDB.bbs_list_coll.find()[:1]:
             self.start_urls.append(d['url'])
 
         super(StockDetailSpider, self).__init__(*a, **kw)

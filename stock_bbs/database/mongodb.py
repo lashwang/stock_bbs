@@ -11,7 +11,7 @@ __author__ = 'Simon'
 class MongoDB(object):
     client = MongoClient(settings['MONGODB_SERVER'],settings['MONGODB_PORT'])
     db = client[settings['MONGODB_DB']]
-    collection_list = db[settings['MONGODB_COLLECTION_LIST']]
+    bbs_list_coll = db[settings['MONGODB_COLLECTION_LIST']]
 
 
 
