@@ -26,9 +26,6 @@ class MongoDBPipeline(object):
 
     def process_item_bbs_list(self,item,spider):
         #print 'process_item_bbs_list,click number:',item['clickNumber']
-        clickNumber = int(item['clickNumber'])
-        if clickNumber < int(settings['CLICKNUMBER_THRESHOLD'])*10000:
-            return item
 
         data = dict(item)
         print data

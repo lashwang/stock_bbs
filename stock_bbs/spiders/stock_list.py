@@ -33,9 +33,12 @@ class StockSpider(CrawlSpider):
         super(StockSpider, self).__init__(*a, **kw)
 
     rules = (
+        # for page index next link
         Rule (LinkExtractor(allow=("nextid", ),
             restrict_xpaths=('//div[@class="links"]/a[@rel="nofollow"]',)),
             callback="parse_index_page", follow=True),
+
+
     )
 
     def parse_start_url(self, response):
@@ -51,14 +54,32 @@ class StockSpider(CrawlSpider):
         hxs = response.xpath(u'//div[@class="mt5"]')
         hxs = hxs.xpath(u'.//tr')
         for each in hxs:
-            yield HtmlParser.parse_bbs_ticket(each,response)
+            item = HtmlParser.parse_bbs_ticket(each,response)
+            if not item:
+                continue
+            clickNumber = int(item['clickNumber'])
+            if clickNumber < int(settings['CLICKNUMBER_THRESHOLD'])*10000:
+                continue
+            print item['url']
+            request = Request(item['url'],callback=self.parse_detail_page)
+            request.meta['item'] = item
+            yield request
 
 
     def parse_detail_page(self,respone):
-        print 'parse_detail_page,url:',respone.url
-        Request("http://annapolis.craigslist.org/sof/", callback=self.parse_detail_page)
+        item = respone.meta['item']
+        result = HtmlParser.parse_detail_page_main(respone)
 
-        pass
+        if result['title']:
+            item['title'] = result['title']
+
+        if result['create_date']:
+            item['create_date'] = result['create_date']
+
+        if result['first_comment']:
+            item['first_comment'] = result['first_comment']
+
+        return item
 
 
 

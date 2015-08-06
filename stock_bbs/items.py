@@ -12,10 +12,12 @@ class StockBBSProfieItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     url = scrapy.Field()
-    #title = scrapy.Field()
+    title = scrapy.Field()
     author = scrapy.Field()
     clickNumber = scrapy.Field()
     responseNUmber = scrapy.Field()
+    create_date = scrapy.Field()
+    first_comment = scrapy.Field()
     pass
 
 

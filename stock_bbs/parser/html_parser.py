@@ -72,12 +72,12 @@ class HtmlParser(object):
             #print title
             result['title']= title
 
-        origin_date = response.xpath(u'//*[@id="post_head"]//*[@class="atl-info"]//span[2]//text()').extract()
+        create_date = response.xpath(u'//*[@id="post_head"]//*[@class="atl-info"]//span[2]//text()').extract()
 
-        if origin_date and len(origin_date) == 1:
-            origin_date = origin_date[0]
-            #print origin_date
-            result['origin_date']= origin_date
+        if create_date and len(create_date) == 1:
+            create_date = create_date[0]
+            #print create_date
+            result['create_date']= create_date
 
         uname = response.xpath(u'//*[@id="post_head"]//*[@class="atl-info"]//*[@uname]//text()').extract()
         if uname and len(uname) == 1:

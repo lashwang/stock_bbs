@@ -2,7 +2,7 @@
 from pymongo.connection import MongoClient
 from scrapy.conf import settings
 from scrapy.exceptions import DropItem
-from scrapy import log
+
 
 __author__ = 'Simon'
 
