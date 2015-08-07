@@ -22,4 +22,6 @@ class StockBBSProfieItem(scrapy.Item):
 
 class StockBBSDetailItem(scrapy.Item):
     url = scrapy.Field()
+    first_comment = scrapy.Field()
+    bbs_list = scrapy.Field() # list of bbs comment
 

@@ -12,7 +12,7 @@ class MongoDB(object):
     client = MongoClient(settings['MONGODB_SERVER'],settings['MONGODB_PORT'])
     db = client[settings['MONGODB_DB']]
     bbs_list_coll = db[settings['MONGODB_COLLECTION_LIST']]
-
+    bbs_detail_coll = db[settings['MONGODB_COLLECTION_DETAIL']]
 
 
 

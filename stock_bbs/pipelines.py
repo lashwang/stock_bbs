@@ -16,7 +16,9 @@ class MongoDBPipeline(object):
 
 
     def __init__(self):
-        MongoDB.bbs_list_coll.create_index(self.__get_uniq_key(),unique=True)
+        MongoDB.bbs_list_coll.create_index('url',unique=True)
+        MongoDB.bbs_detail_coll.create_index('url',unique=True)
+
 
     def process_item(self, item, spider):
         if spider.name == 'stock_list':
@@ -26,7 +28,6 @@ class MongoDBPipeline(object):
 
     def process_item_bbs_list(self,item,spider):
         #print 'process_item_bbs_list,click number:',item['clickNumber']
-
         data = dict(item)
         print data
 
@@ -42,7 +43,3 @@ class MongoDBPipeline(object):
     def process_item_bbs_detail(self,item,spider):
         print 'process_item_bbs_detail'
 
-    def __get_uniq_key(self):
-        if not settings['MONGODB_UNIQ_KEY'] or settings['MONGODB_UNIQ_KEY'] == "":
-            return None
-        return settings['MONGODB_UNIQ_KEY']

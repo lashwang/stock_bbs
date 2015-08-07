@@ -8,7 +8,7 @@ from stock_bbs.utils.utils import *
 from scrapy.exceptions import CloseSpider
 from stock_bbs.database.mongodb import MongoDB
 from scrapy.conf import settings
-
+from stock_bbs.items import *
 
 __author__ = 'Simon'
 
@@ -31,35 +31,58 @@ class StockDetailSpider(CrawlSpider):
 
     def parse_start_url(self, response):
         print 'parse_start_url:',response.url
+        item = StockBBSDetailItem()
+
 
         result = HtmlParser.parse_detail_page_main(response)
-        print result
+        item['url'] = response.url
+        item['first_comment'] = result['first_comment']
+        item['bbs_list'] = []
 
         if result['last_page_link']:
             request = Request(result['last_page_link'],callback=self.parse_sub_url)
             request.meta['uname'] = result['uname']
             request.meta['count'] = 1
-            return request
+            request.meta['item'] = item
+            yield request
+        else:
+            yield item
+
+
 
 
 
     def parse_sub_url(self,response):
         uname = response.meta['uname']
         count = response.meta['count']
+        item = response.meta['item']
         max_page_count = int(settings['MAX_DETAIL_PAGE'])
         print 'parse_sub_url:',response.url,uname
+
+        '''
+        get user's comment in the request page
+        Structure:
+        prev_page_link:prev page link url
+        bbs_list:list of each author's comment,it contains:
+        (1)time
+        (2)comment
+        (3)...
+        '''
         results = HtmlParser.parse_detail_page_sub(response,response.meta['uname'])
-        print results
+        #print results
+
+        item['bbs_list'] += results['bbs_list']
 
         if count >= max_page_count:
             print 'get max detailed page:',count
-            return
+            yield item
 
         if results['prev_page_link']:
             request = Request(results['prev_page_link'],callback=self.parse_sub_url)
             request.meta['uname'] = uname
             request.meta['count'] = count + 1
-            return request
+            request.meta['item'] = item
+            yield request
 
 
 

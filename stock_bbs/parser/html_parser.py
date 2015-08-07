@@ -122,7 +122,7 @@ class HtmlParser(object):
                 #print _uname
                 if _uname.encode('utf8') == uname.encode('utf8'):
                     publish_time = each.xpath(u'.//*[@class="atl-info"]//span[2]//text()').extract()
-                    print "fine same user"
+                    #print "fine same user"
                     if publish_time and len(publish_time) == 1:
                         publish_time = publish_time[0]
                         #print publish_time
@@ -137,7 +137,7 @@ class HtmlParser(object):
                     else:
                         print 'unexpected xpath in bbs context'
 
-                    bbs_list.append({'publish_time':publish_time,'bbs_content':bbs_content})
+                    bbs_list.append({'time':publish_time,'content':bbs_content})
             else:
                 print 'unexpected xpath in uname'
 
