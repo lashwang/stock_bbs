@@ -75,14 +75,14 @@ class StockDetailSpider(CrawlSpider):
 
         if count >= max_page_count:
             print 'get max detailed page:',count
-            yield item
+            return item
 
         if results['prev_page_link']:
             request = Request(results['prev_page_link'],callback=self.parse_sub_url)
             request.meta['uname'] = uname
             request.meta['count'] = count + 1
             request.meta['item'] = item
-            yield request
+            return request
 
 
 
