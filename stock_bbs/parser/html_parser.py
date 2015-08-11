@@ -102,17 +102,18 @@ class HtmlParser(object):
             last_page_link = prev_page_link[0]
             page_details['prev_page_link'] = urlparse.urljoin(response.url,last_page_link)
 
+        page_index = HtmlParser.parse_page_index_from_url(response.url)
 
         # get user's comments
         comments_list_selector = response.xpath(u'//*[@class="atl-item"]')
-        bbs_list = HtmlParser.parse_comment_by_uname(comments_list_selector,uname)
+        bbs_list = HtmlParser.parse_comment_by_uname(comments_list_selector,uname,page_index)
         page_details['bbs_list'] = bbs_list
 
         return page_details
 
 
     @staticmethod
-    def parse_comment_by_uname(selector,uname):
+    def parse_comment_by_uname(selector,uname,page_index):
         bbs_list = []
 
         for each in selector:
@@ -137,7 +138,10 @@ class HtmlParser(object):
                     else:
                         print 'unexpected xpath in bbs context'
 
-                    bbs_list.append({'time':publish_time,'content':bbs_content})
+                    bbs_list.append(
+                        {'time':HtmlParser.parse_create_date(publish_time),
+                         'content':bbs_content,
+                         'page_index':page_index})
             else:
                 print 'unexpected xpath in uname'
 
@@ -161,4 +165,14 @@ class HtmlParser(object):
         return datetime.datetime(year,month,day,hour,min,sec)
 
 
+    @staticmethod
+    def parse_page_index_from_url(url):
+        pattern = re.compile('[a-zA-z]+://[\S]*\-(\d+)\.([\S]*)$')
+        match = pattern.match(url)
 
+        if match:
+            print match.group(1)
+            index = match.group(1)
+            return int(index)
+
+        return -1

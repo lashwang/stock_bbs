@@ -42,4 +42,7 @@ class MongoDBPipeline(object):
 
     def process_item_bbs_detail(self,item,spider):
         print 'process_item_bbs_detail'
+        data = dict(item)
+        MongoDB.bbs_detail_coll.update({'url':data['url']},{'$set':data},True)
+
 
